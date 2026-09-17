@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "./firebase";
-import { UserProfile } from "./types";
+import { UserProfile, UserRole } from "./types";
 import { seedDatabaseIfEmpty } from "./utils/seeder";
 
 // Components
@@ -44,6 +44,11 @@ function AppContent() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const normalizeProfile = (profile: UserProfile): UserProfile => ({
+    ...profile,
+    role: String(profile.role || "student").trim().toLowerCase() as UserRole,
+  });
+
   // Run initial seed on mount to make sure the university simulation is populated
   useEffect(() => {
     const initDatabase = async () => {
@@ -57,7 +62,7 @@ function AppContent() {
         try {
           const docSnap = await getDoc(doc(db, "users", user.uid));
           if (docSnap.exists()) {
-            setCurrentUser(docSnap.data() as UserProfile);
+            setCurrentUser(normalizeProfile(docSnap.data() as UserProfile));
           } else {
             console.log("No custom database profile found for authenticated UID.");
           }
@@ -98,7 +103,7 @@ function AppContent() {
   };
 
   const handleAuthSuccess = (profile: UserProfile) => {
-    setCurrentUser(profile);
+    setCurrentUser(normalizeProfile(profile));
     navigate("/dashboard");
   };
 
@@ -168,6 +173,8 @@ function AppContent() {
         element={
           !currentUser ? (
             <Navigate to="/login" replace />
+          ) : currentUser.role === "admin" ? (
+            <Navigate to="/admin" replace />
           ) : (
             <Dashboard currentUser={currentUser} onLogout={handleLogout} />
           )
