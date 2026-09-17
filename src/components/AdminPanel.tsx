@@ -167,6 +167,12 @@ export default function AdminPanel() {
           </p>
         </div>
         <div className="flex gap-2">
+          <button
+            onClick={() => setActiveTab("users")}
+            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-mono text-xs rounded-xl font-bold transition flex items-center gap-1.5"
+          >
+            <Users className="w-4 h-4" /> Manage Users
+          </button>
           <button 
             onClick={generateReport}
             className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-mono text-xs rounded-xl font-bold transition flex items-center gap-1.5"
@@ -199,7 +205,7 @@ export default function AdminPanel() {
             activeTab === "users" ? "border-red-500 text-white" : "border-transparent text-gray-400 hover:text-white"
           }`}
         >
-          <Users className="w-3.5 h-3.5 inline mr-1.5" /> Member Verification ({users.length})
+          <Users className="w-3.5 h-3.5 inline mr-1.5" /> User Management ({users.length})
         </button>
         <button
           onClick={() => setActiveTab("requests")}
